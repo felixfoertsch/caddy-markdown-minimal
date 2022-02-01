@@ -1,0 +1,70 @@
+<!-- The request to caddy is parsed in here and stored in $pathParts
+eg localhost/other-page -->
+{{ $pathParts := splitList "/" .OriginalReq.URL.Path }}
+
+<!-- The markdown filename is extracted from request. It acceses $pathParts
+and picks the right hand side. In our example: "other-page". The default
+filename is set to "index". -->
+{{ $markdownFilename := default "index" (slice $pathParts 1 | join "/") }}
+
+<!-- Since there are no folders in this minimal example, append .md to the
+file name and feed it to the FrontMatter splitter -->
+{{ $markdownFilePath := printf "/%s.md" $markdownFilename }}
+{{ $markdownFile := (include $markdownFilePath | splitFrontMatter) }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Minimal Caddy Markdown Example</title>
+</head>
+
+<body>
+	<nav>
+		<h1>Navigation</h1>
+		<ul>
+			<!-- Link to other files (excluding .md -> the string used here is
+			redirected to this template and processed in the header) -->
+			<li><a href="/">Index</a></li>
+			<li><a href="/other-page">Other Page</a></li>
+		</ul>
+		<hr>
+	</nav>
+	<!-- Access FrontMatter -->
+	<ul>
+		<li>{{ $markdownFile.Meta.title}}</li>
+		<li>{{ $markdownFile.Meta.author}}</li>
+		<li>{{ $markdownFile.Meta.date}}</li>
+	</ul>
+
+	<!-- Render as Markdown -->
+	{{ markdown $markdownFile.Body }}
+
+	<p>
+		Good sources for this example:
+	<ul>
+		<li>
+			<a href="https://github.com/caddyserver/website">
+				The Caddy Website
+			</a>
+		</li>
+		<li>
+			<a
+				href="https://blog.thomaspuppe.de/static-sites-from-markdown-with-caddy-server">
+				Thomas Puppes Blog that inspired this
+			</a>
+		</li>
+		<li>
+			<a href="https://caddy.community/t/markdown-support-in-v2/6984/15">
+				A helpful post on the caddy forum
+			</a>
+		</li>
+
+	</ul>
+	</p>
+</body>
+
+</html>

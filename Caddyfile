@@ -1,0 +1,11 @@
+localhost
+
+root * /site
+
+file_server
+templates
+encode gzip
+
+try_files {path}.html {path}
+
+rewrite /*    /index.html

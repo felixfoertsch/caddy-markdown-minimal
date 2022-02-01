@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/site
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+    # If the volume should be persisted, enable `external`. You may need to
+    # create the volume for the compose file to work.
+    # external: true
+  caddy_config:
